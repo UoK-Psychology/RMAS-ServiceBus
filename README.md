@@ -3,7 +3,7 @@ A basic implementation of the RMAS esb specification that uses mongodb as a back
 NB. You will need to have mongodb instlled and running for this to work
 
 example usage:
-'''
+```python
 >>> from suds.client import Client
 >>> c = Client('http://localhost:7789/?wsdl', cache=None)
 >>> print c
@@ -40,5 +40,5 @@ True
 
 >>> now = datetime.now()
 >>> c.service.getEvents(now.isoformat())
-'''
+```
  
