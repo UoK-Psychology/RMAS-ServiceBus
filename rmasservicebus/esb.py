@@ -16,6 +16,8 @@ from wsgiref.simple_server import make_server
 from datetime import datetime
 import dateutil.parser
 from pymongo import Connection
+from rmasservicebus.EventValidator import validate_rmas_event
+from pymongo.errors import PyMongoError
 
 database = None
 message_collection = None
@@ -29,14 +31,19 @@ class RMASService(ServiceBase):
         @param message a valid RMAS event
         @return whether or not the message was succesfully pushed (most likely reason for False is invalid maessage)
         '''
-        logging.info(event)
-        message = {'event':event,
-                   'received':datetime.now()}
+        logging.info('attempting to push event to the queue: %s' % event)
         
-        message_collection.insert(message)
+        if validate_rmas_event(event):
+            try:
+                message = {'event':event,
+                           'received':datetime.now()}
+                message_collection.insert(message)
+                return True
+            except Exception:
+                pass
         
-
-        return True
+        return False
+    
     @srpc(Unicode, _returns=Iterable(Unicode))
     def getEvents(timestamp):
         '''
@@ -45,19 +52,22 @@ class RMASService(ServiceBase):
             @return a list of RMAS events.
         '''
         
-        logging.info(timestamp)
+        logging.info('call to getEvents with timestamp: %s' % timestamp)
         
         try:
             datetime = dateutil.parser.parse(timestamp)
-        except ValueError:
-            return []
+        except ValueError as e:
+            logging.error('There was a Value Error parsing the timestamp %s: e' % (timestamp, e))
+
         
         #query the messages collection based on the datetime
-        
-        messages = [message['event'] for message in message_collection.find({"received": {"$gt": datetime}})]
-        logging.info(messages)
-        return messages
+        try:
+            messages = [message['event'] for message in message_collection.find({"received": {"$gt": datetime}})]
+            return messages
+        except PyMongoError as e:
+            logging.error('An error occurred whilst querying the database: %s'% e)
 
+        return []
 if __name__=='__main__':
     
     connection = Connection()
