@@ -1,0 +1,10 @@
+lxml==3.0
+pymongo==2.3
+python-dateutil==2.1
+pytz==2012f
+rpclib==2.8.0-rc
+six==1.2.0
+spyne==2.8.2-rc
+suds==0.4
+web2py==1.98.2
+wsgiref==0.1.2
