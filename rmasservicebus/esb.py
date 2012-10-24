@@ -75,8 +75,8 @@ if __name__=='__main__':
     message_collection = database.message_collection
     
     
-    logging.basicConfig(level=logging.DEBUG)
-    logging.getLogger('spyne.protocol.xml').setLevel(logging.DEBUG)
+    logging.basicConfig(level=logging.ERROR)
+    logging.getLogger('spyne.protocol.xml').setLevel(logging.ERROR)
 
     logging.info("listening to http://127.0.0.1:7789")
     logging.info("wsdl is at: http://localhost:7789/?wsdl")
