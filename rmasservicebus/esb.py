@@ -38,9 +38,13 @@ class RMASService(ServiceBase):
                 message = {'event':event,
                            'received':datetime.now()}
                 message_collection.insert(message)
+                logging.info("shoved message in the queue: %s" % event)
                 return True
             except Exception:
+                logging.error("Failed to add the message to the queue!")
                 pass
+        else:
+            logging.error('Not a valid message: %s' % event)
         
         return False
     
@@ -75,8 +79,8 @@ if __name__=='__main__':
     message_collection = database.message_collection
     
     
-    logging.basicConfig(level=logging.ERROR)
-    logging.getLogger('spyne.protocol.xml').setLevel(logging.ERROR)
+    logging.basicConfig(level=logging.INFO)
+    logging.getLogger('spyne.protocol.xml').setLevel(logging.INFO)
 
     logging.info("listening to http://127.0.0.1:7789")
     logging.info("wsdl is at: http://localhost:7789/?wsdl")
